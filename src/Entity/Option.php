@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\CategorieRepository;
+use App\Repository\OptionRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: CategorieRepository::class)]
-class Categorie
+#[ORM\Entity(repositoryClass: OptionRepository::class)]
+class Option
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -19,11 +20,14 @@ class Categorie
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $imageUrl = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
+    private ?string $prixSupplementaire = null;
+
+    #[ORM\Column(length: 20)]
+    private ?string $type = null;
 
     #[ORM\Column]
-    private ?int $position = null;
+    private ?bool $disponible = null;
 
     public function getId(): ?int
     {
@@ -61,26 +65,38 @@ class Categorie
         return $this;
     }
 
-    public function getImageUrl(): ?string
+    public function getPrixSupplementaire(): ?string
     {
-        return $this->imageUrl;
+        return $this->prixSupplementaire;
     }
 
-    public function setImageUrl(?string $imageUrl): static
+    public function setPrixSupplementaire(string $prixSupplementaire): static
     {
-        $this->imageUrl = $imageUrl;
+        $this->prixSupplementaire = $prixSupplementaire;
 
         return $this;
     }
 
-    public function getPosition(): ?int
+    public function getType(): ?string
     {
-        return $this->position;
+        return $this->type;
     }
 
-    public function setPosition(int $position): static
+    public function setType(string $type): static
     {
-        $this->position = $position;
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function isDisponible(): ?bool
+    {
+        return $this->disponible;
+    }
+
+    public function setDisponible(bool $disponible): static
+    {
+        $this->disponible = $disponible;
 
         return $this;
     }
