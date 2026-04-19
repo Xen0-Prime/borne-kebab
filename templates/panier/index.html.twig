@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon panier — Borne Kebab{% endblock %}
+
+{% block content %}
+
+    <div class="page-title">Mon panier</div>
+
+    {% if panier.lignes is empty %}
+        <p style="color:#888;margin-top:30px;text-align:center">Votre panier est vide.</p>
+        <div style="text-align:center;margin-top:20px">
+            <a href="{{ path('app_carte_index') }}" class="btn btn-primary">Voir la carte</a>
+        </div>
+    {% else %}
+        {% set total = 0 %}
+        <div style="max-width:700px;margin:24px auto">
+            {% for ligne in panier.lignes %}
+                {% set sousTotal = ligne.prixUnitaire * ligne.quantite %}
+                {% set total = total + sousTotal %}
+                <div style="background:#fff;border-radius:10px;padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 6px rgba(0,0,0,.08)">
+
+                    <div style="flex:1">
+                        <div style="font-weight:bold;font-size:16px">{{ ligne.produit.nom }}</div>
+
+                        {% if ligne.options is not empty %}
+                            <div style="font-size:13px;color:#666;margin-top:4px">
+                                Options : {% for opt in ligne.options %}{{ opt.nom }}{% if not loop.last %}, {% endif %}{% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div style="font-size:14px;color:#c0392b;margin-top:6px">
+                            {{ ligne.prixUnitaire|number_format(2, ',', ' ') }} € × {{ ligne.quantite }}
+                            = <strong>{{ sousTotal|number_format(2, ',', ' ') }} €</strong>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <form method="post" action="{{ path('app_panier_modifier', {id: ligne.id}) }}" style="display:flex;gap:6px;align-items:center">
+                            <input type="number" name="quantite" value="{{ ligne.quantite }}" min="0" max="99"
+                                   style="width:52px;padding:6px;border:1px solid #ddd;border-radius:6px;text-align:center">
+                            <button type="submit" style="padding:6px 12px;background:#c0392b;color:#fff;border:none;border-radius:6px;cursor:pointer">
+                                ✓
+                            </button>
+                        </form>
+
+                        <form method="post" action="{{ path('app_panier_supprimer', {id: ligne.id}) }}">
+                            <button type="submit" style="padding:6px 10px;background:#eee;border:none;border-radius:6px;cursor:pointer;color:#c0392b;font-weight:bold">
+                                ✕
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div style="text-align:right;margin-top:16px;font-size:20px;font-weight:bold">
+                Total : {{ total|number_format(2, ',', ' ') }} €
+            </div>
+
+            <div style="display:flex;justify-content:space-between;margin-top:24px">
+                <a href="{{ path('app_carte_index') }}" class="btn btn-primary" style="background:#888">
+                    ← Continuer mes achats
+                </a>
+                <form method="post" action="{{ path('app_commande_valider') }}">
+                    <button type="submit" class="btn btn-primary">
+                        Valider la commande →
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

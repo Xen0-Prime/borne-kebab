@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande confirmée — Borne Kebab{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .confirmation-header {
+        text-align: center; padding: 40px 20px 30px;
+    }
+    .confirmation-header .check { font-size: 72px; }
+    .confirmation-header h2 { font-size: 28px; margin: 12px 0 6px; color: #27ae60; }
+    .confirmation-header .numero {
+        font-size: 22px; font-weight: bold;
+        background: #c0392b; color: white;
+        display: inline-block; padding: 6px 20px; border-radius: 8px; margin-top: 10px;
+    }
+
+    .recap-block {
+        background: white; border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        overflow: hidden; margin-bottom: 20px;
+    }
+    .recap-block h3 {
+        background: #f8f8f8; padding: 12px 20px;
+        font-size: 15px; color: #555;
+        border-bottom: 1px solid #eee;
+    }
+    .recap-ligne {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        padding: 14px 20px; border-bottom: 1px solid #f5f5f5;
+    }
+    .recap-ligne:last-child { border-bottom: none; }
+    .recap-nom { font-weight: bold; font-size: 15px; }
+    .recap-options { margin-top: 5px; }
+    .option-tag {
+        display: inline-block; font-size: 12px; padding: 2px 8px;
+        border-radius: 12px; margin: 2px; background: #fce4e4; color: #c0392b;
+    }
+    .recap-prix { font-size: 15px; font-weight: bold; color: #c0392b; white-space: nowrap; margin-left: 20px; }
+
+    .total-final {
+        background: #c0392b; color: white; border-radius: 10px;
+        padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 24px;
+    }
+    .total-final span:first-child { font-size: 18px; }
+    .total-final span:last-child  { font-size: 30px; font-weight: bold; }
+
+    .statut-badge {
+        display: inline-block; padding: 6px 14px; border-radius: 20px;
+        font-size: 13px; font-weight: bold; background: #fef3cd; color: #856404;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    {# En-tête de confirmation #}
+    <div class="confirmation-header">
+        <div class="check">✅</div>
+        <h2>Commande confirmée !</h2>
+        <p style="color:#666;font-size:16px">Merci pour votre commande. Votre numéro de commande est :</p>
+        <div class="numero">{{ commande.numero }}</div>
+    </div>
+
+    {# Statut actuel #}
+    <div style="text-align:center;margin-bottom:24px">
+        <span class="statut-badge">⏳ Statut : {{ commande.statut|replace({'_': ' '})|capitalize }}</span>
+        &nbsp;
+        <span style="font-size:13px;color:#888">Passée le {{ commande.createdAt|date('d/m/Y à H:i') }}</span>
+    </div>
+
+    {# Récapitulatif des produits #}
+    <div class="recap-block">
+        <h3>Récapitulatif de votre commande</h3>
+
+        {% for ligne in commande.lignes %}
+            <div class="recap-ligne">
+                <div>
+                    <div class="recap-nom">
+                        {{ ligne.nomProduit }}
+                        <span style="color:#888;font-weight:normal;font-size:14px"> × {{ ligne.quantite }}</span>
+                    </div>
+
+                    {# Affichage des options depuis le snapshot JSON #}
+                    {% if ligne.optionsChoisies is not empty %}
+                        <div class="recap-options">
+                            {% for opt in ligne.optionsChoisies %}
+                                <span class="option-tag">{{ opt.nom }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="recap-prix">
+                    {{ (ligne.prixUnitaire * ligne.quantite)|number_format(2, ',', ' ') }} €
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {# Commentaire si présent #}
+    {% if commande.commentaire %}
+        <div style="background:white;border-radius:10px;padding:16px 20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.07)">
+            <strong>📝 Commentaire :</strong> {{ commande.commentaire }}
+        </div>
+    {% endif %}
+
+    {# Total final #}
+    <div class="total-final">
+        <span>Total payé</span>
+        <span>{{ commande.total|number_format(2, ',', ' ') }} €</span>
+    </div>
+
+    {# Bouton retour accueil #}
+    <div style="text-align:center">
+        <a href="{{ path('app_carte_index') }}" class="btn btn-primary" style="font-size:16px;padding:14px 32px">
+            🏠 Retour à l'accueil
+        </a>
+    </div>
+
+{% endblock %}

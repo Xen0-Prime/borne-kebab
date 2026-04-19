@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ categorie.nom }} — Borne Kebab{% endblock %}
+
+{% block content %}
+
+    {# Fil d'Ariane #}
+    <div class="breadcrumb">
+        <a href="{{ path('app_carte_index') }}">Accueil</a>
+        &rsaquo; {{ categorie.nom }}
+    </div>
+
+    <div class="page-title">{{ categorie.nom }}</div>
+    {% if categorie.description %}
+        <div class="page-subtitle">{{ categorie.description }}</div>
+    {% endif %}
+
+    {% if produits is empty %}
+        <p style="color:#888;margin-top:30px">Aucun produit disponible dans cette catégorie.</p>
+    {% else %}
+        <div class="grid">
+            {% for produit in produits %}
+                <a href="{{ path('app_produit_detail', {id: produit.id}) }}" class="card">
+
+                    {% if produit.imageUrl %}
+                        <img src="{{ asset(produit.imageUrl) }}" alt="{{ produit.nom }}">
+                    {% else %}
+                        <div class="card-placeholder">🥙</div>
+                    {% endif %}
+
+                    <div class="card-body">
+                        <div class="card-title">{{ produit.nom }}</div>
+                        {% if produit.description %}
+                            <div class="card-desc">{{ produit.description }}</div>
+                        {% endif %}
+                        <div class="card-price">{{ produit.prix }} €</div>
+                        <span class="btn btn-primary" style="margin-top:10px;display:inline-block;font-size:13px;padding:8px 16px">
+                            Personnaliser →
+                        </span>
+                    </div>
+
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div style="margin-top:30px">
+        <a href="{{ path('app_carte_index') }}" class="btn btn-secondary">← Retour aux catégories</a>
+    </div>
+
+{% endblock %}

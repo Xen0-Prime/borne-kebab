@@ -17,33 +17,35 @@ class LigneCommande
     #[ORM\Column]
     private ?int $quantite = null;
 
+    // Prix au moment de la commande (snapshot) — ne change jamais même si le produit est modifié
     #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 2)]
     private ?string $prixUnitaire = null;
 
+    // Nom du produit au moment de la commande (snapshot)
+    // Permet d'afficher le nom même si le produit est supprimé plus tard
     #[ORM\Column(length: 150)]
     private ?string $nomProduit = null;
 
-    #[ORM\Column(nullable: true)]
+    // Tableau JSON des options choisies (snapshot complet : nom + prix)
+    // Exemple : [{"nom": "Fromage fondu", "prix": "1.00"}, {"nom": "Sans oignons", "prix": "0.00"}]
+    #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $optionsChoisies = null;
 
-    #[ORM\ManyToOne]
+    // CORRECTION : ajout de inversedBy: 'lignes' pour lier à Commande::$lignes
+    // nullable: false car une ligne appartient toujours à une commande
+    #[ORM\ManyToOne(targetEntity: Commande::class, inversedBy: 'lignes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Commande $commande = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    // CORRECTION : nullable: true car le produit peut être supprimé
+    // (on garde quand même la ligne avec nomProduit en snapshot)
+    #[ORM\ManyToOne(targetEntity: Produit::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Produit $produit = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getQuantite(): ?int
@@ -54,7 +56,6 @@ class LigneCommande
     public function setQuantite(int $quantite): static
     {
         $this->quantite = $quantite;
-
         return $this;
     }
 
@@ -66,7 +67,6 @@ class LigneCommande
     public function setPrixUnitaire(string $prixUnitaire): static
     {
         $this->prixUnitaire = $prixUnitaire;
-
         return $this;
     }
 
@@ -78,7 +78,6 @@ class LigneCommande
     public function setNomProduit(string $nomProduit): static
     {
         $this->nomProduit = $nomProduit;
-
         return $this;
     }
 
@@ -90,7 +89,6 @@ class LigneCommande
     public function setOptionsChoisies(?array $optionsChoisies): static
     {
         $this->optionsChoisies = $optionsChoisies;
-
         return $this;
     }
 
@@ -102,7 +100,6 @@ class LigneCommande
     public function setCommande(?Commande $commande): static
     {
         $this->commande = $commande;
-
         return $this;
     }
 
@@ -114,7 +111,12 @@ class LigneCommande
     public function setProduit(?Produit $produit): static
     {
         $this->produit = $produit;
-
         return $this;
+    }
+
+    // BONUS : calcul du sous-total de cette ligne
+    public function getSousTotal(): float
+    {
+        return (float) $this->prixUnitaire * $this->quantite;
     }
 }

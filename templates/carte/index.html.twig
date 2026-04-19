@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notre carte — Borne Kebab{% endblock %}
+
+{% block content %}
+
+    <div class="page-title">Notre carte</div>
+    <div class="page-subtitle">Choisissez une catégorie pour commencer</div>
+
+    {% if categories is empty %}
+        <p style="color:#888;margin-top:30px">Aucune catégorie disponible pour le moment.</p>
+    {% else %}
+        <div class="grid">
+            {% for categorie in categories %}
+                <a href="{{ path('app_carte_categorie', {id: categorie.id}) }}" class="card">
+
+                    {# Image de la catégorie si disponible, sinon emoji #}
+                    {% if categorie.imageUrl %}
+                        <img src="{{ asset(categorie.imageUrl) }}" alt="{{ categorie.nom }}">
+                    {% else %}
+                        <div class="card-placeholder">🥙</div>
+                    {% endif %}
+
+                    <div class="card-body">
+                        <div class="card-title">{{ categorie.nom }}</div>
+                        {% if categorie.description %}
+                            <div class="card-desc">{{ categorie.description }}</div>
+                        {% endif %}
+                        <span class="btn btn-primary" style="margin-top:8px;display:inline-block;font-size:13px;padding:8px 16px">
+                            Voir les produits →
+                        </span>
+                    </div>
+
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+{% endblock %}
