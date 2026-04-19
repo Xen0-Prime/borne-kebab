@@ -37,10 +37,8 @@
                     <div style="display:flex;gap:8px;align-items:center">
                         <form method="post" action="{{ path('app_panier_modifier', {id: ligne.id}) }}" style="display:flex;gap:6px;align-items:center">
                             <input type="number" name="quantite" value="{{ ligne.quantite }}" min="0" max="99"
+                                   onchange="this.form.submit()"
                                    style="width:52px;padding:6px;border:1px solid #ddd;border-radius:6px;text-align:center">
-                            <button type="submit" style="padding:6px 12px;background:#c0392b;color:#fff;border:none;border-radius:6px;cursor:pointer">
-                                ✓
-                            </button>
                         </form>
 
                         <form method="post" action="{{ path('app_panier_supprimer', {id: ligne.id}) }}">

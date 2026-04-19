@@ -20,8 +20,8 @@ class CommandeController extends AbstractController
         PanierRepository $panierRepo,
         EntityManagerInterface $em
     ): Response {
-        $sessionId = $req->getSession()->getId();
-        $panier    = $panierRepo->findOneBy(['sessionId' => $sessionId]);
+        $panierId = $req->getSession()->get('panier_id');
+        $panier   = $panierId ? $panierRepo->find($panierId) : null;
 
         if (!$panier || $panier->getLignes()->isEmpty()) {
             $this->addFlash('error', 'Votre panier est vide.');
@@ -66,6 +66,7 @@ class CommandeController extends AbstractController
             $em->remove($ligne);
         }
         $em->flush();
+        $req->getSession()->remove('panier_id');
 
         return $this->redirectToRoute('app_commande_confirmation', ['id' => $commande->getId()]);
     }

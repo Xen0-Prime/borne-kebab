@@ -19,15 +19,22 @@ class PanierController extends AbstractController
     // Récupère ou crée le panier lié à la session
     private function getPanier(Request $req, PanierRepository $repo, EntityManagerInterface $em): Panier
     {
-        $sessionId = $req->getSession()->getId();
-        $panier    = $repo->findOneBy(['sessionId' => $sessionId]);
+        $session  = $req->getSession();
+        $panierId = $session->get('panier_id');
 
-        if (!$panier) {
-            $panier = new Panier();
-            $panier->setSessionId($sessionId);
-            $em->persist($panier);
-            $em->flush();
+        if ($panierId) {
+            $panier = $repo->find($panierId);
+            if ($panier) {
+                return $panier;
+            }
         }
+
+        $panier = new Panier();
+        $panier->setSessionId(uniqid('panier_', true));
+        $em->persist($panier);
+        $em->flush();
+        $session->set('panier_id', $panier->getId());
+
         return $panier;
     }
 
