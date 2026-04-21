@@ -23,7 +23,7 @@ class CommandeController extends AbstractController
         $panierId = $req->getSession()->get('panier_id');
         $panier   = $panierId ? $panierRepo->find($panierId) : null;
 
-        if (!$panier || $panier->getLignes()->isEmpty()) {
+        if (!$panier || ($panier->getLignes()->isEmpty() && $panier->getLignesMenu()->isEmpty())) {
             $this->addFlash('error', 'Votre panier est vide.');
             return $this->redirectToRoute('app_panier_index');
         }
@@ -61,10 +61,50 @@ class CommandeController extends AbstractController
         $commande->setTotal((string) $total);
         $em->persist($commande);
 
-        // Vider le panier après validation
+        // Vider les lignes produit du panier après validation
         foreach ($panier->getLignes() as $ligne) {
             $em->remove($ligne);
         }
+
+        // Transformer les lignes menu du panier en lignes de commande
+        foreach ($panier->getLignesMenu() as $ligneMenu) {
+            $menu = $ligneMenu->getMenu();
+
+            $ligneCmd = new LigneCommande();
+            $ligneCmd->setNomProduit($menu ? 'Menu : ' . $menu->getNom() : 'Menu supprimé');
+            $ligneCmd->setProduit(null);
+            $ligneCmd->setQuantite($ligneMenu->getQuantite());
+            $ligneCmd->setPrixUnitaire($ligneMenu->getPrixUnitaire());
+
+            // Snapshot du détail de chaque composant
+            $snapshot = [];
+            foreach ($ligneMenu->getDetails() as $detail) {
+                $produitDetail = $detail->getProduit();
+                $composant     = $detail->getComposant();
+                $snapshotLine  = [
+                    'composant' => $composant ? $composant->getNom() : '',
+                    'produit'   => $produitDetail ? $produitDetail->getNom() : '',
+                    'options'   => [],
+                ];
+                foreach ($detail->getOptions() as $opt) {
+                    $snapshotLine['options'][] = [
+                        'nom'  => $opt->getNom(),
+                        'prix' => $opt->getPrixSupplementaire(),
+                    ];
+                }
+                $snapshot[] = $snapshotLine;
+            }
+            $ligneCmd->setOptionsChoisies($snapshot);
+
+            $commande->addLigne($ligneCmd);
+            $total += (float) $ligneMenu->getPrixUnitaire() * $ligneMenu->getQuantite();
+
+            $em->remove($ligneMenu);
+        }
+
+        // Mise à jour du total avec les menus inclus
+        $commande->setTotal((string) $total);
+
         $em->flush();
         $req->getSession()->remove('panier_id');
 

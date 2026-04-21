@@ -129,9 +129,17 @@
     <a href="{{ path('app_carte_index') }}" style="color:white;text-decoration:none">
         <h1>🥙 Borne Kebab</h1>
     </a>
-    <a href="{{ path('app_panier_index') }}" class="panier-icon">
-        🛒 Mon panier
-    </a>
+    <div style="display:flex;align-items:center;gap:12px">
+        <a href="{{ path('app_menu_index') }}" class="panier-icon" style="background:rgba(255,255,255,.15);color:white;border:2px solid rgba(255,255,255,.5)">
+            🍱 Menus
+        </a>
+        <a href="{{ path('app_menu_perso_creer') }}" class="panier-icon" style="background:rgba(255,255,255,.15);color:white;border:2px solid rgba(255,255,255,.5)">
+            🍽️ Mon menu
+        </a>
+        <a href="{{ path('app_panier_index') }}" class="panier-icon">
+            🛒 Mon panier
+        </a>
+    </div>
 </header>
 
 {# Affichage des messages flash #}

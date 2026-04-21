@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Entity\LignePanier;
 use App\Entity\Panier;
 use App\Repository\CategorieRepository;
+use App\Repository\LignePanierMenuRepository;
 use App\Repository\LignePanierRepository;
 use App\Repository\OptionRepository;
 use App\Repository\PanierRepository;
@@ -112,6 +113,43 @@ class PanierController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', 'Produit supprimé du panier.');
+        return $this->redirectToRoute('app_panier_index');
+    }
+
+    // Modifie la quantité d'une ligne menu dans le panier
+    #[Route('/panier/modifier-menu/{id}', name: 'app_panier_modifier_menu', methods: ['POST'])]
+    public function modifierMenu(
+        int $id,
+        Request $req,
+        LignePanierMenuRepository $ligneMenuRepo,
+        EntityManagerInterface $em
+    ): Response {
+        $ligne    = $ligneMenuRepo->find($id);
+        $quantite = (int) $req->request->get('quantite');
+
+        if ($ligne) {
+            if ($quantite < 1) {
+                $em->remove($ligne);
+            } else {
+                $ligne->setQuantite($quantite);
+            }
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('app_panier_index');
+    }
+
+    // Supprime une ligne menu du panier
+    #[Route('/panier/supprimer-menu/{id}', name: 'app_panier_supprimer_menu', methods: ['POST'])]
+    public function supprimerMenu(int $id, LignePanierMenuRepository $ligneMenuRepo, EntityManagerInterface $em): Response
+    {
+        $ligne = $ligneMenuRepo->find($id);
+        if ($ligne) {
+            $em->remove($ligne);
+            $em->flush();
+        }
+
+        $this->addFlash('success', 'Menu supprimé du panier.');
         return $this->redirectToRoute('app_panier_index');
     }
 }

@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes menus — Borne Kebab{% endblock %}
+
+{% block content %}
+
+    <div class="page-title">🍽️ Mes menus personnalisés</div>
+
+    <div style="text-align:right;margin-bottom:20px">
+        <a href="{{ path('app_menu_perso_creer') }}" class="btn btn-primary">
+            ➕ Créer un nouveau menu
+        </a>
+    </div>
+
+    {% if menus is empty %}
+        <p style="color:#888;margin-top:30px;text-align:center">Tu n'as pas encore créé de menu.</p>
+        <div style="text-align:center;margin-top:20px">
+            <a href="{{ path('app_menu_perso_creer') }}" class="btn btn-primary">Créer mon premier menu</a>
+        </div>
+    {% else %}
+        <div style="max-width:700px;margin:0 auto">
+            {% for menu in menus %}
+                <div style="background:#fff;border-radius:10px;padding:20px;margin-bottom:16px;box-shadow:0 2px 6px rgba(0,0,0,.08)">
+
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                        <div>
+                            <div style="font-weight:bold;font-size:17px">
+                                {{ menu.nom ?? 'Mon menu du ' ~ menu.createdAt|date('d/m/Y') }}
+                            </div>
+                            <div style="font-size:13px;color:#888;margin-top:2px">
+                                Créé le {{ menu.createdAt|date('d/m/Y à H:i') }}
+                            </div>
+                        </div>
+                        <div style="font-size:20px;font-weight:bold;color:#c0392b">
+                            {{ menu.prixTotal|number_format(2, ',', ' ') }} €
+                        </div>
+                    </div>
+
+                    {# Détail des produits du menu #}
+                    <div style="margin-bottom:14px">
+                        {% for ligne in menu.lignes %}
+                            <div style="font-size:14px;padding:4px 0;border-bottom:1px solid #f5f5f5">
+                                <strong>{{ ligne.produit.nom }}</strong>
+                                <span style="color:#888;font-size:12px"> — {{ ligne.produit.categorie.nom }}</span>
+                                {% if ligne.options is not empty %}
+                                    <span style="color:#666;font-size:12px">
+                                        ({% for opt in ligne.options %}{{ opt.nom }}{% if not loop.last %}, {% endif %}{% endfor %})
+                                    </span>
+                                {% endif %}
+                                <span style="float:right;color:#c0392b;font-size:13px">{{ ligne.prixLigne|number_format(2, ',', ' ') }} €</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {# Actions #}
+                    <div style="display:flex;gap:10px;align-items:center">
+                        <form method="post" action="{{ path('app_menu_perso_ajouter_panier', {id: menu.id}) }}" style="display:flex;gap:8px;align-items:center">
+                            <input type="number" name="quantite" value="1" min="1" max="99"
+                                   style="width:52px;padding:6px;border:1px solid #ddd;border-radius:6px;text-align:center">
+                            <button type="submit" class="btn btn-success" style="padding:8px 16px;font-size:14px">
+                                🛒 Ajouter au panier
+                            </button>
+                        </form>
+
+                        <form method="post" action="{{ path('app_menu_perso_supprimer', {id: menu.id}) }}" style="margin-left:auto"
+                              onsubmit="return confirm('Supprimer ce menu ?')">
+                            <button type="submit" class="btn btn-danger" style="padding:8px 14px;font-size:14px">
+                                🗑 Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div style="margin-top:24px">
+        <a href="{{ path('app_carte_index') }}" class="btn btn-secondary">← Retour à la carte</a>
+    </div>
+
+{% endblock %}

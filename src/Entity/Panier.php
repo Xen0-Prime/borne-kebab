@@ -38,9 +38,16 @@ class Panier
     #[ORM\OneToMany(targetEntity: LignePanier::class, mappedBy: 'panier', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $lignes;
 
+    /**
+     * @var Collection<int, LignePanierMenu>
+     */
+    #[ORM\OneToMany(targetEntity: LignePanierMenu::class, mappedBy: 'panier', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $lignesMenu;
+
     public function __construct()
     {
         $this->lignes = new ArrayCollection();
+        $this->lignesMenu = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -116,6 +123,34 @@ class Panier
         foreach ($this->lignes as $ligne) {
             $total += (float) $ligne->getPrixUnitaire() * $ligne->getQuantite();
         }
+        foreach ($this->lignesMenu as $ligneMenu) {
+            $total += $ligneMenu->getSousTotal();
+        }
         return $total;
+    }
+
+    /** @return Collection<int, LignePanierMenu> */
+    public function getLignesMenu(): Collection
+    {
+        return $this->lignesMenu;
+    }
+
+    public function addLigneMenu(LignePanierMenu $ligneMenu): static
+    {
+        if (!$this->lignesMenu->contains($ligneMenu)) {
+            $this->lignesMenu->add($ligneMenu);
+            $ligneMenu->setPanier($this);
+        }
+        return $this;
+    }
+
+    public function removeLigneMenu(LignePanierMenu $ligneMenu): static
+    {
+        if ($this->lignesMenu->removeElement($ligneMenu)) {
+            if ($ligneMenu->getPanier() === $this) {
+                $ligneMenu->setPanier(null);
+            }
+        }
+        return $this;
     }
 }

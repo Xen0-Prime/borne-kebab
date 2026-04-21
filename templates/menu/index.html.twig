@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos menus — Borne Kebab{% endblock %}
+
+{% block content %}
+
+    <div class="page-title">Nos menus</div>
+    <div class="page-subtitle">Des combos complets à prix réduit</div>
+
+    {% if menus is empty %}
+        <p style="color:#888;margin-top:30px;text-align:center">Aucun menu disponible pour le moment.</p>
+        <div style="text-align:center;margin-top:20px">
+            <a href="{{ path('app_carte_index') }}" class="btn btn-primary">Voir la carte</a>
+        </div>
+    {% else %}
+        <div class="grid">
+            {% for menu in menus %}
+                <a href="{{ path('app_menu_configurer', {id: menu.id}) }}" class="card">
+
+                    {% if menu.imageUrl %}
+                        <img src="{{ asset(menu.imageUrl) }}" alt="{{ menu.nom }}">
+                    {% else %}
+                        <div class="card-placeholder">🍱</div>
+                    {% endif %}
+
+                    <div class="card-body">
+                        <div class="card-title">{{ menu.nom }}</div>
+                        {% if menu.description %}
+                            <div class="card-desc">{{ menu.description }}</div>
+                        {% endif %}
+                        <div class="card-price" style="color:#c0392b;font-weight:bold;font-size:18px;margin-top:6px">
+                            {{ menu.prix|number_format(2, ',', ' ') }} €
+                        </div>
+                        {% if menu.composants is not empty %}
+                            <div style="font-size:12px;color:#888;margin-top:4px">
+                                {% for composant in menu.composants %}{{ composant.nom }}{% if not loop.last %} + {% endif %}{% endfor %}
+                            </div>
+                        {% endif %}
+                        <span class="btn btn-primary" style="margin-top:10px;display:inline-block;font-size:13px;padding:8px 16px">
+                            Composer →
+                        </span>
+                    </div>
+
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+{% endblock %}

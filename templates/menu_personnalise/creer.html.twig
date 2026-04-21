@@ -1,0 +1,228 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer mon menu — Borne Kebab{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .creer-menu-layout { max-width: 800px; margin: 0 auto; }
+
+    .categorie-block {
+        background: white; border-radius: 10px; padding: 20px;
+        margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .categorie-block h3 {
+        font-size: 17px; margin-bottom: 14px; padding-bottom: 8px;
+        border-bottom: 2px solid #f0f0f0; color: #333;
+    }
+    .produit-choice {
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 0; border-bottom: 1px solid #f5f5f5; cursor: pointer;
+    }
+    .produit-choice:last-of-type { border-bottom: none; }
+    .produit-choice input[type="radio"] { width: 18px; height: 18px; accent-color: #c0392b; cursor: pointer; }
+    .produit-choice-label { font-size: 15px; font-weight: 500; flex: 1; }
+    .produit-choice-price { font-size: 13px; color: #888; }
+
+    .options-block {
+        display: none; margin-top: 10px; padding: 12px;
+        background: #fafafa; border-radius: 8px; border: 1px solid #eee;
+    }
+    .options-block.visible { display: block; }
+    .option-item {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 8px 0; border-bottom: 1px solid #f0f0f0;
+    }
+    .option-item:last-child { border-bottom: none; }
+    .option-label { display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1; }
+    .option-label input[type="checkbox"] { width: 18px; height: 18px; accent-color: #c0392b; cursor: pointer; }
+    .option-nom { font-size: 14px; }
+    .option-prix-gratuit { font-size: 12px; color: #27ae60; font-weight: bold; }
+    .option-prix-payant  { font-size: 12px; color: #e67e22; font-weight: bold; }
+
+    .nom-menu-block {
+        background: white; border-radius: 10px; padding: 20px;
+        margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .nom-menu-block label { font-size: 16px; font-weight: bold; display: block; margin-bottom: 8px; }
+    .nom-menu-block input[type="text"] {
+        width: 100%; padding: 10px 14px; border: 1px solid #ddd;
+        border-radius: 8px; font-size: 15px;
+    }
+
+    .prix-total-block {
+        background: #c0392b; color: white; border-radius: 10px;
+        padding: 16px 20px; display: flex; align-items: center;
+        justify-content: space-between; margin-bottom: 16px;
+    }
+    .prix-total-label { font-size: 16px; }
+    .prix-total-value { font-size: 28px; font-weight: bold; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="breadcrumb">
+        <a href="{{ path('app_carte_index') }}">Accueil</a>
+        &rsaquo; <a href="{{ path('app_menu_perso_liste') }}">Mes menus</a>
+        &rsaquo; Créer mon menu
+    </div>
+
+    <div class="page-title">🍽️ Créer mon menu</div>
+    <div class="page-subtitle">Compose ton repas en choisissant ce que tu veux</div>
+
+    <div class="creer-menu-layout">
+        <form action="{{ path('app_menu_perso_sauvegarder') }}" method="POST" id="form-menu-perso">
+
+            {# Nom optionnel du menu #}
+            <div class="nom-menu-block">
+                <label for="nom_menu">Nom de mon menu (optionnel)</label>
+                <input type="text" name="nom_menu" id="nom_menu" placeholder="Ex : Mon kebab classique">
+            </div>
+
+            {# Une section par catégorie #}
+            {% for categorie in categories %}
+                {% set produitsDispo = categorie.produits|filter(p => p.disponible) %}
+                {% if produitsDispo|length > 0 %}
+                    <div class="categorie-block">
+                        <h3>
+                            {% if categorie.imageUrl %}
+                                <img src="{{ asset(categorie.imageUrl) }}" style="height:22px;vertical-align:middle;margin-right:6px;border-radius:4px">
+                            {% endif %}
+                            {{ categorie.nom }}
+                            <span style="font-size:13px;color:#aaa;font-weight:normal">(optionnel)</span>
+                        </h3>
+
+                        {# Option "aucun" pour ne pas choisir dans cette catégorie #}
+                        <div class="produit-choice">
+                            <input type="radio"
+                                   name="cat_{{ categorie.id }}_produit"
+                                   id="cat{{ categorie.id }}_none"
+                                   value=""
+                                   checked
+                                   onchange="clearOptions({{ categorie.id }})">
+                            <label for="cat{{ categorie.id }}_none" class="produit-choice-label" style="color:#aaa;cursor:pointer">
+                                — Aucun —
+                            </label>
+                        </div>
+
+                        {% for produit in produitsDispo %}
+                            <div class="produit-choice">
+                                <input type="radio"
+                                       name="cat_{{ categorie.id }}_produit"
+                                       id="cat{{ categorie.id }}_p{{ produit.id }}"
+                                       value="{{ produit.id }}"
+                                       data-prix="{{ produit.prix }}"
+                                       onchange="showOptions({{ categorie.id }}, {{ produit.id }}, {{ produit.prix }})">
+                                <label for="cat{{ categorie.id }}_p{{ produit.id }}" class="produit-choice-label" style="cursor:pointer">
+                                    {{ produit.nom }}
+                                </label>
+                                <span class="produit-choice-price">{{ produit.prix|number_format(2, ',', ' ') }} €</span>
+                            </div>
+
+                            {# Options du produit #}
+                            {% set optionsRetrait = produit.options|filter(o => o.type == 'retrait') %}
+                            {% set optionsAjout   = produit.options|filter(o => o.type == 'ajout') %}
+
+                            {% if optionsRetrait is not empty or optionsAjout is not empty %}
+                                <div class="options-block" id="opts_c{{ categorie.id }}_p{{ produit.id }}">
+
+                                    {% if optionsRetrait is not empty %}
+                                        <div style="font-size:13px;font-weight:bold;margin-bottom:8px;color:#333">❌ Retirer :</div>
+                                        {% for option in optionsRetrait %}
+                                            <div class="option-item">
+                                                <label class="option-label">
+                                                    <input type="checkbox"
+                                                           name="cat_{{ categorie.id }}_options[]"
+                                                           value="{{ option.id }}"
+                                                           data-prix="{{ option.prixSupplementaire }}"
+                                                           onchange="updateTotal()">
+                                                    <span class="option-nom">{{ option.nom }}</span>
+                                                </label>
+                                                <span class="option-prix-gratuit">Gratuit</span>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+
+                                    {% if optionsAjout is not empty %}
+                                        <div style="font-size:13px;font-weight:bold;margin:10px 0 8px;color:#333">➕ Ajouter :</div>
+                                        {% for option in optionsAjout %}
+                                            <div class="option-item">
+                                                <label class="option-label">
+                                                    <input type="checkbox"
+                                                           name="cat_{{ categorie.id }}_options[]"
+                                                           value="{{ option.id }}"
+                                                           data-prix="{{ option.prixSupplementaire }}"
+                                                           onchange="updateTotal()">
+                                                    <span class="option-nom">{{ option.nom }}</span>
+                                                </label>
+                                                {% if option.prixSupplementaire > 0 %}
+                                                    <span class="option-prix-payant">+ {{ option.prixSupplementaire }} €</span>
+                                                {% else %}
+                                                    <span class="option-prix-gratuit">Gratuit</span>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            {# Prix total dynamique #}
+            <div class="prix-total-block">
+                <span class="prix-total-label">Total estimé</span>
+                <span class="prix-total-value" id="prix-total">0,00 €</span>
+            </div>
+
+            <button type="submit" class="btn btn-success" style="width:100%;font-size:17px;padding:14px">
+                💾 Sauvegarder mon menu
+            </button>
+        </form>
+
+        <div style="margin-top:14px">
+            <a href="{{ path('app_carte_index') }}" class="btn btn-secondary">← Retour à la carte</a>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    // prix courant par catégorie : { catId: prix }
+    const prixParCat = {};
+
+    function showOptions(catId, produitId, prixProduit) {
+        // Masquer tous les blocs options de cette catégorie et décocher
+        document.querySelectorAll('[id^="opts_c' + catId + '_p"]').forEach(el => {
+            el.classList.remove('visible');
+            el.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+        });
+        const block = document.getElementById('opts_c' + catId + '_p' + produitId);
+        if (block) block.classList.add('visible');
+
+        prixParCat[catId] = parseFloat(prixProduit) || 0;
+        updateTotal();
+    }
+
+    function clearOptions(catId) {
+        document.querySelectorAll('[id^="opts_c' + catId + '_p"]').forEach(el => {
+            el.classList.remove('visible');
+            el.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+        });
+        prixParCat[catId] = 0;
+        updateTotal();
+    }
+
+    function updateTotal() {
+        let total = Object.values(prixParCat).reduce((a, b) => a + b, 0);
+        // Ajouter les options cochées dans les blocs visibles
+        document.querySelectorAll('.options-block.visible input[type="checkbox"]:checked').forEach(cb => {
+            total += parseFloat(cb.dataset.prix) || 0;
+        });
+        document.getElementById('prix-total').textContent = total.toFixed(2).replace('.', ',') + ' €';
+    }
+</script>
+{% endblock %}

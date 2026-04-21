@@ -82,11 +82,20 @@
                         <span style="color:#888;font-weight:normal;font-size:14px"> × {{ ligne.quantite }}</span>
                     </div>
 
-                    {# Affichage des options depuis le snapshot JSON #}
+                    {# Affichage des options/détails depuis le snapshot JSON #}
                     {% if ligne.optionsChoisies is not empty %}
                         <div class="recap-options">
                             {% for opt in ligne.optionsChoisies %}
-                                <span class="option-tag">{{ opt.nom }}</span>
+                                {% if opt.composant is defined %}
+                                    {# Ligne menu : snapshot {composant, produit, options} #}
+                                    <span class="option-tag">{{ opt.composant }} : {{ opt.produit }}</span>
+                                    {% for subOpt in opt.options %}
+                                        <span class="option-tag">{{ subOpt.nom }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    {# Ligne produit : snapshot {nom, prix} #}
+                                    <span class="option-tag">{{ opt.nom }}</span>
+                                {% endif %}
                             {% endfor %}
                         </div>
                     {% endif %}

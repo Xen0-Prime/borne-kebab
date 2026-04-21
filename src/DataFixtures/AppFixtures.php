@@ -3,6 +3,8 @@
 namespace App\DataFixtures;
 
 use App\Entity\Categorie;
+use App\Entity\Menu;
+use App\Entity\MenuComposant;
 use App\Entity\Option;
 use App\Entity\Produit;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -245,7 +247,66 @@ class AppFixtures extends Fixture
         }
 
         // =============================================
-        // 4. ENVOI EN BASE DE DONNÉES
+        // 4. CRÉATION DES MENUS BASIQUES (3)
+        // =============================================
+        // categories: 0=Kebabs, 1=Sandwichs, 2=Boissons & Extras
+
+        $menusData = [
+            [
+                'nom'         => 'Menu Kebab',
+                'description' => 'Un kebab au choix + une boisson au choix',
+                'prix'        => '8.50',
+                'position'    => 1,
+                'composants'  => [
+                    ['nom' => 'Kebab au choix',   'categorie' => 0, 'position' => 1],
+                    ['nom' => 'Boisson au choix', 'categorie' => 2, 'position' => 2],
+                ],
+            ],
+            [
+                'nom'         => 'Menu Sandwich',
+                'description' => 'Un sandwich au choix + une boisson au choix',
+                'prix'        => '7.50',
+                'position'    => 2,
+                'composants'  => [
+                    ['nom' => 'Sandwich au choix', 'categorie' => 1, 'position' => 1],
+                    ['nom' => 'Boisson au choix',  'categorie' => 2, 'position' => 2],
+                ],
+            ],
+            [
+                'nom'         => 'Menu Complet',
+                'description' => 'Un kebab au choix + un accompagnement + une boisson',
+                'prix'        => '12.00',
+                'position'    => 3,
+                'composants'  => [
+                    ['nom' => 'Kebab au choix',      'categorie' => 0, 'position' => 1],
+                    ['nom' => 'Accompagnement',      'categorie' => 2, 'position' => 2],
+                    ['nom' => 'Boisson au choix',    'categorie' => 2, 'position' => 3],
+                ],
+            ],
+        ];
+
+        foreach ($menusData as $menuData) {
+            $menu = new Menu();
+            $menu->setNom($menuData['nom']);
+            $menu->setDescription($menuData['description']);
+            $menu->setPrix($menuData['prix']);
+            $menu->setDisponible(true);
+            $menu->setPosition($menuData['position']);
+
+            foreach ($menuData['composants'] as $compData) {
+                $composant = new MenuComposant();
+                $composant->setNom($compData['nom']);
+                $composant->setPosition($compData['position']);
+                $composant->setCategorie($categories[$compData['categorie']]);
+                $menu->addComposant($composant);
+                $manager->persist($composant);
+            }
+
+            $manager->persist($menu);
+        }
+
+        // =============================================
+        // 5. ENVOI EN BASE DE DONNÉES
         // =============================================
         $manager->flush();
     }
