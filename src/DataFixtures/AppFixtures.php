@@ -14,66 +14,19 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        // =============================================
-        // 1. CRÉATION DES OPTIONS / INGRÉDIENTS (8)
-        // =============================================
-        // On crée les options EN PREMIER pour pouvoir les lier aux produits ensuite
-
+        // 1. OPTIONS
         $optionsData = [
-            // --- GRATUITES (type retrait) ---
-            [
-                'nom'   => 'Sans oignons',
-                'desc'  => 'Retirer les oignons',
-                'prix'  => '0.00',
-                'type'  => 'retrait',
-            ],
-            [
-                'nom'   => 'Sans cornichons',
-                'desc'  => 'Retirer les cornichons',
-                'prix'  => '0.00',
-                'type'  => 'retrait',
-            ],
-            [
-                'nom'   => 'Sans tomates',
-                'desc'  => 'Retirer les tomates',
-                'prix'  => '0.00',
-                'type'  => 'retrait',
-            ],
-            // --- GRATUITES (type ajout) ---
-            [
-                'nom'   => 'Sauce blanche',
-                'desc'  => 'Ajouter de la sauce blanche',
-                'prix'  => '0.00',
-                'type'  => 'ajout',
-            ],
-            [
-                'nom'   => 'Sauce harissa',
-                'desc'  => 'Ajouter de la sauce harissa',
-                'prix'  => '0.00',
-                'type'  => 'ajout',
-            ],
-            [
-                'nom'   => 'Salade supplémentaire',
-                'desc'  => 'Portion de salade en plus',
-                'prix'  => '0.00',
-                'type'  => 'ajout',
-            ],
-            // --- PAYANTES (type ajout) ---
-            [
-                'nom'   => 'Fromage fondu',
-                'desc'  => 'Fromage fondu gratiné',
-                'prix'  => '1.00',
-                'type'  => 'ajout',
-            ],
-            [
-                'nom'   => 'Bacon grillé',
-                'desc'  => 'Tranches de bacon croustillant',
-                'prix'  => '1.50',
-                'type'  => 'ajout',
-            ],
+            ['nom' => 'Sans chou',            'desc' => 'Retirer le chou',                          'prix' => '0.00', 'type' => 'retrait'],
+            ['nom' => 'Sans sauce tonkatsu',  'desc' => 'Retirer la sauce tonkatsu',                'prix' => '0.00', 'type' => 'retrait'],
+            ['nom' => 'Sans moutarde',        'desc' => 'Retirer la moutarde',                      'prix' => '0.00', 'type' => 'retrait'],
+            ['nom' => 'Sans fromage',         'desc' => 'Retirer le fromage',                       'prix' => '0.00', 'type' => 'retrait'],
+            ['nom' => 'Sauce tonkatsu extra', 'desc' => 'Portion supplementaire de sauce tonkatsu', 'prix' => '0.00', 'type' => 'ajout'],
+            ['nom' => 'Sauce mayo',           'desc' => 'Mayo japonaise Kewpie',                    'prix' => '0.00', 'type' => 'ajout'],
+            ['nom' => 'Chou extra',           'desc' => 'Portion de chou supplementaire',           'prix' => '0.00', 'type' => 'ajout'],
+            ['nom' => 'Fromage fondu',        'desc' => 'Fromage japonais fondu',                   'prix' => '1.00', 'type' => 'ajout'],
+            ['nom' => 'Oeuf au plat',         'desc' => 'Oeuf au plat croustillant',                'prix' => '1.00', 'type' => 'ajout'],
+            ['nom' => 'Double viande',        'desc' => 'Portion de viande doublee',                'prix' => '2.50', 'type' => 'ajout'],
         ];
-
-        // On stocke les objets Option dans un tableau pour les réutiliser
         $options = [];
         foreach ($optionsData as $data) {
             $option = new Option();
@@ -86,28 +39,12 @@ class AppFixtures extends Fixture
             $options[] = $option;
         }
 
-        // =============================================
-        // 2. CRÉATION DES CATÉGORIES (3)
-        // =============================================
-
+        // 2. CATEGORIES
         $categoriesData = [
-            [
-                'nom'      => 'Kebabs',
-                'desc'     => 'Nos kebabs maison préparés à la commande',
-                'position' => 1,
-            ],
-            [
-                'nom'      => 'Sandwichs',
-                'desc'     => 'Sandwichs chauds et froids',
-                'position' => 2,
-            ],
-            [
-                'nom'      => 'Boissons & Extras',
-                'desc'     => 'Boissons fraîches et accompagnements',
-                'position' => 3,
-            ],
+            ['nom' => 'Sandwichs Katsu', 'desc' => 'Nos sandwichs katsu maison, panes a la commande', 'position' => 1],
+            ['nom' => 'Accompagnements', 'desc' => 'Frites, coleslaw et a-cotes',                      'position' => 2],
+            ['nom' => 'Boissons',        'desc' => 'Boissons japonaises et classiques',                'position' => 3],
         ];
-
         $categories = [];
         foreach ($categoriesData as $data) {
             $categorie = new Categorie();
@@ -118,117 +55,23 @@ class AppFixtures extends Fixture
             $categories[] = $categorie;
         }
 
-        // =============================================
-        // 3. CRÉATION DES PRODUITS (12 — 4 par catégorie)
-        // =============================================
-        // Pour chaque produit, on précise quelles options sont disponibles
-        // en utilisant les index du tableau $options (0 à 7)
-
+        // 3. PRODUITS
         $produitsData = [
-
-            // --- Catégorie 0 : Kebabs ---
-            [
-                'categorie' => 0,
-                'nom'       => 'Kebab Classique',
-                'desc'      => 'Viande de veau grillée, salade, tomates, oignons, sauce blanche',
-                'prix'      => '6.50',
-                'position'  => 1,
-                'options'   => [0, 1, 2, 3, 4, 5, 6, 7], // toutes les options
-            ],
-            [
-                'categorie' => 0,
-                'nom'       => 'Kebab Double Viande',
-                'desc'      => 'Double portion de viande grillée avec tous les accompagnements',
-                'prix'      => '8.50',
-                'position'  => 2,
-                'options'   => [0, 1, 2, 3, 4, 5, 6, 7],
-            ],
-            [
-                'categorie' => 0,
-                'nom'       => 'Kebab Poulet',
-                'desc'      => 'Poulet mariné grillé, salade fraîche, sauce au choix',
-                'prix'      => '7.00',
-                'position'  => 3,
-                'options'   => [0, 1, 2, 3, 4, 5, 6, 7],
-            ],
-            [
-                'categorie' => 0,
-                'nom'       => 'Kebab Mixte',
-                'desc'      => 'Mélange veau et poulet, légumes frais, double sauce',
-                'prix'      => '8.00',
-                'position'  => 4,
-                'options'   => [0, 1, 2, 3, 4, 5, 6, 7],
-            ],
-
-            // --- Catégorie 1 : Sandwichs ---
-            [
-                'categorie' => 1,
-                'nom'       => 'Sandwich Grec',
-                'desc'      => 'Pain pita, viande grillée, tzatziki, tomates, oignons rouges',
-                'prix'      => '6.00',
-                'position'  => 1,
-                'options'   => [0, 2, 3, 4, 6, 7], // sans cornichons (pas logique), avec fromage/bacon
-            ],
-            [
-                'categorie' => 1,
-                'nom'       => 'Sandwich Falafel',
-                'desc'      => 'Falafels maison, houmous, salade, sauce tahini',
-                'prix'      => '5.50',
-                'position'  => 2,
-                'options'   => [0, 1, 2, 3, 4, 5], // pas de bacon sur falafel
-            ],
-            [
-                'categorie' => 1,
-                'nom'       => 'Sandwich Merguez',
-                'desc'      => 'Merguez grillées, frites, harissa, moutarde',
-                'prix'      => '6.50',
-                'position'  => 3,
-                'options'   => [0, 2, 3, 4, 5, 7],
-            ],
-            [
-                'categorie' => 1,
-                'nom'       => 'Sandwich Thon',
-                'desc'      => 'Thon, maïs, tomates, oeufs durs, sauce mayo',
-                'prix'      => '5.00',
-                'position'  => 4,
-                'options'   => [0, 1, 2, 3, 5, 6],
-            ],
-
-            // --- Catégorie 2 : Boissons & Extras ---
-            [
-                'categorie' => 2,
-                'nom'       => 'Frites Maison',
-                'desc'      => 'Frites fraîches croustillantes, sel, ketchup',
-                'prix'      => '2.50',
-                'position'  => 1,
-                'options'   => [], // pas d'options sur les frites
-            ],
-            [
-                'categorie' => 2,
-                'nom'       => 'Boisson 33cl',
-                'desc'      => 'Coca-Cola, Fanta, Sprite, eau minérale au choix',
-                'prix'      => '2.00',
-                'position'  => 2,
-                'options'   => [],
-            ],
-            [
-                'categorie' => 2,
-                'nom'       => 'Salade Fraîche',
-                'desc'      => 'Salade verte, tomates cerises, concombre, vinaigrette',
-                'prix'      => '3.00',
-                'position'  => 3,
-                'options'   => [],
-            ],
-            [
-                'categorie' => 2,
-                'nom'       => 'Baklava',
-                'desc'      => 'Pâtisserie orientale au miel et aux pistaches',
-                'prix'      => '2.50',
-                'position'  => 4,
-                'options'   => [],
-            ],
+            ['categorie' => 0, 'nom' => "Yoshikage's Katsu",    'desc' => 'Porc pane, chou emince, sauce tonkatsu, pain brioche grille',  'prix' => '7.50',  'position' => 1, 'options' => [0,1,2,3,4,5,6,7,8,9]],
+            ['categorie' => 0, 'nom' => "Okuyasu's Double Katsu",'desc' => 'Double escalope de porc pane, chou, mayo Kewpie',              'prix' => '10.50', 'position' => 2, 'options' => [0,1,2,3,4,5,6,7,8]],
+            ['categorie' => 0, 'nom' => "Koichi's Chicken Katsu",'desc' => 'Poulet marine au sake, pane panko, sauce gingembre yuzu',      'prix' => '7.90',  'position' => 3, 'options' => [0,1,2,3,4,5,6,7,8,9]],
+            ['categorie' => 0, 'nom' => "Yukako's Spicy Katsu",  'desc' => 'Porc pane, sauce tonkatsu pimentee, cornichons tsukemono',     'prix' => '8.00',  'position' => 4, 'options' => [0,1,2,3,4,5,6,7,8,9]],
+            ['categorie' => 0, 'nom' => "Rohan's Tofu Katsu",    'desc' => 'Tofu ferme pane panko, sauce miso-sesame, chou - vegetarien',  'prix' => '6.90',  'position' => 5, 'options' => [0,1,2,3,4,5,6,7,8]],
+            ['categorie' => 0, 'nom' => "Josuke's Katsu Royal",  'desc' => 'Porc pane, fromage fondu, sauce BBQ japonaise, chou caramelise','prix' => '9.00', 'position' => 6, 'options' => [0,1,2,4,5,6,8,9]],
+            ['categorie' => 1, 'nom' => 'Frites Maison',           'desc' => 'Frites fraiches croustillantes, sel de mer, ketchup maison',      'prix' => '3.00', 'position' => 1, 'options' => []],
+            ['categorie' => 1, 'nom' => 'Frites Dorees au Sesame', 'desc' => 'Frites assaisonnees sesame torrefie, piment shichimi, sauce mayo', 'prix' => '3.50', 'position' => 2, 'options' => []],
+            ['categorie' => 1, 'nom' => 'Coleslaw Japonais',       'desc' => 'Chou emince, carottes, mayo Kewpie, vinaigre de riz',              'prix' => '2.50', 'position' => 3, 'options' => []],
+            ['categorie' => 1, 'nom' => 'Soupe Miso',              'desc' => 'Soupe miso, tofu, algues wakame, oignons verts',                   'prix' => '2.00', 'position' => 4, 'options' => []],
+            ['categorie' => 2, 'nom' => 'Ramune Original', 'desc' => 'Limonade japonaise a la bille - saveur originale', 'prix' => '3.00', 'position' => 1, 'options' => []],
+            ['categorie' => 2, 'nom' => 'Ramune Fraise',   'desc' => 'Limonade japonaise a la bille - saveur fraise',    'prix' => '3.00', 'position' => 2, 'options' => []],
+            ['categorie' => 2, 'nom' => 'The Vert Glace',  'desc' => 'The vert sencha infuse a froid, legerement sucre', 'prix' => '2.50', 'position' => 3, 'options' => []],
+            ['categorie' => 2, 'nom' => 'Coca-Cola 33cl',  'desc' => 'Coca-Cola Original en canette bien fraiche',       'prix' => '2.00', 'position' => 4, 'options' => []],
         ];
-
         foreach ($produitsData as $data) {
             $produit = new Produit();
             $produit->setNom($data['nom']);
@@ -237,54 +80,46 @@ class AppFixtures extends Fixture
             $produit->setDisponible(true);
             $produit->setPosition($data['position']);
             $produit->setCategorie($categories[$data['categorie']]);
-
-            // Liaison des options disponibles pour ce produit
-            foreach ($data['options'] as $optionIndex) {
-                $produit->addOption($options[$optionIndex]);
+            foreach ($data['options'] as $idx) {
+                $produit->addOption($options[$idx]);
             }
-
             $manager->persist($produit);
         }
 
-        // =============================================
-        // 4. CRÉATION DES MENUS BASIQUES (3)
-        // =============================================
-        // categories: 0=Kebabs, 1=Sandwichs, 2=Boissons & Extras
-
+        // 4. MENUS
         $menusData = [
             [
-                'nom'         => 'Menu Kebab',
-                'description' => 'Un kebab au choix + une boisson au choix',
-                'prix'        => '8.50',
-                'position'    => 1,
-                'composants'  => [
-                    ['nom' => 'Kebab au choix',   'categorie' => 0, 'position' => 1],
+                'nom' => 'Menu Gentleman Simple',
+                'description' => 'Un sandwich katsu au choix + une boisson au choix',
+                'prix' => '9.50', 'position' => 1,
+                'composants' => [
+                    ['nom' => 'Katsu au choix',   'categorie' => 0, 'position' => 1],
                     ['nom' => 'Boisson au choix', 'categorie' => 2, 'position' => 2],
                 ],
             ],
             [
-                'nom'         => 'Menu Sandwich',
-                'description' => 'Un sandwich au choix + une boisson au choix',
-                'prix'        => '7.50',
-                'position'    => 2,
-                'composants'  => [
-                    ['nom' => 'Sandwich au choix', 'categorie' => 1, 'position' => 1],
-                    ['nom' => 'Boisson au choix',  'categorie' => 2, 'position' => 2],
+                'nom' => 'Menu Gentleman Complet',
+                'description' => 'Un sandwich katsu + un accompagnement + une boisson',
+                'prix' => '12.50', 'position' => 2,
+                'composants' => [
+                    ['nom' => 'Katsu au choix',          'categorie' => 0, 'position' => 1],
+                    ['nom' => 'Accompagnement au choix', 'categorie' => 1, 'position' => 2],
+                    ['nom' => 'Boisson au choix',        'categorie' => 2, 'position' => 3],
                 ],
             ],
             [
-                'nom'         => 'Menu Complet',
-                'description' => 'Un kebab au choix + un accompagnement + une boisson',
-                'prix'        => '12.00',
-                'position'    => 3,
-                'composants'  => [
-                    ['nom' => 'Kebab au choix',      'categorie' => 0, 'position' => 1],
-                    ['nom' => 'Accompagnement',      'categorie' => 2, 'position' => 2],
-                    ['nom' => 'Boisson au choix',    'categorie' => 2, 'position' => 3],
+                'nom' => 'Menu Killer Queen',
+                'description' => 'Deux sandwichs katsu + deux accompagnements + une boisson',
+                'prix' => '22.00', 'position' => 3,
+                'composants' => [
+                    ['nom' => 'Premier katsu',           'categorie' => 0, 'position' => 1],
+                    ['nom' => 'Deuxieme katsu',          'categorie' => 0, 'position' => 2],
+                    ['nom' => 'Premier accompagnement',  'categorie' => 1, 'position' => 3],
+                    ['nom' => 'Deuxieme accompagnement', 'categorie' => 1, 'position' => 4],
+                    ['nom' => 'Boisson au choix',        'categorie' => 2, 'position' => 5],
                 ],
             ],
         ];
-
         foreach ($menusData as $menuData) {
             $menu = new Menu();
             $menu->setNom($menuData['nom']);
@@ -292,7 +127,6 @@ class AppFixtures extends Fixture
             $menu->setPrix($menuData['prix']);
             $menu->setDisponible(true);
             $menu->setPosition($menuData['position']);
-
             foreach ($menuData['composants'] as $compData) {
                 $composant = new MenuComposant();
                 $composant->setNom($compData['nom']);
@@ -301,13 +135,10 @@ class AppFixtures extends Fixture
                 $menu->addComposant($composant);
                 $manager->persist($composant);
             }
-
             $manager->persist($menu);
         }
 
-        // =============================================
-        // 5. ENVOI EN BASE DE DONNÉES
-        // =============================================
+        // 5. FLUSH
         $manager->flush();
     }
 }

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Notre carte — Borne Kebab{% endblock %}
+{% block title %}Notre carte — St-Gentleman{% endblock %}
 
 {% block content %}
 
@@ -18,7 +18,7 @@
                     {% if categorie.imageUrl %}
                         <img src="{{ asset(categorie.imageUrl) }}" alt="{{ categorie.nom }}">
                     {% else %}
-                        <div class="card-placeholder">🥙</div>
+                        <div class="card-placeholder">�</div>
                     {% endif %}
 
                     <div class="card-body">

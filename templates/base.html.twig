@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Borne Kebab{% endblock %}</title>
+    <title>{% block title %}St-Gentleman{% endblock %}</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,7 +16,7 @@
 
         /* ── HEADER ── */
         header {
-            background-color: #c0392b;
+            background-color: #1a1a2e;
             color: white;
             padding: 16px 24px;
             display: flex;
@@ -29,15 +29,15 @@
             letter-spacing: 1px;
         }
         .panier-icon {
-            background: white;
-            color: #c0392b;
+            background: #c9a84c;
+            color: #1a1a2e;
             padding: 8px 18px;
             border-radius: 8px;
             font-weight: bold;
             text-decoration: none;
             font-size: 15px;
         }
-        .panier-icon:hover { background: #fce4e4; }
+        .panier-icon:hover { background: #b8932a; }
 
         /* ── FLASH MESSAGES ── */
         .flash-success {
@@ -71,12 +71,13 @@
             border: none;
             cursor: pointer;
         }
-        .btn-primary   { background: #c0392b; color: white; }
-        .btn-primary:hover { background: #a93226; }
+        .btn-primary   { background: #c9a84c; color: #1a1a2e; }
+        .btn-primary:hover { background: #b8932a; }
         .btn-secondary { background: #555; color: white; }
         .btn-secondary:hover { background: #333; }
         .btn-danger    { background: #e74c3c; color: white; }
         .btn-danger:hover { background: #c0392b; }
+
         .btn-success   { background: #27ae60; color: white; }
         .btn-success:hover { background: #1e8449; }
 
@@ -101,7 +102,7 @@
         .card img { width: 100%; height: 160px; object-fit: cover; }
         .card-placeholder {
             width: 100%; height: 160px;
-            background: #fce4e4;
+            background: #f5e6c8;
             display: flex; align-items: center; justify-content: center;
             font-size: 48px;
         }
@@ -109,12 +110,12 @@
         .card-title { font-size: 16px; font-weight: bold; margin-bottom: 6px; }
         .card-desc  { font-size: 13px; color: #666; margin-bottom: 10px; }
         .card-price {
-            font-size: 18px; font-weight: bold; color: #c0392b;
+            font-size: 18px; font-weight: bold; color: #c9a84c;
         }
 
         /* ── BREADCRUMB ── */
         .breadcrumb { font-size: 13px; color: #888; margin-bottom: 16px; }
-        .breadcrumb a { color: #c0392b; text-decoration: none; }
+        .breadcrumb a { color: #c9a84c; text-decoration: none; }
         .breadcrumb a:hover { text-decoration: underline; }
 
         /* ── PAGE TITLE ── */
@@ -127,7 +128,7 @@
 
 <header>
     <a href="{{ path('app_carte_index') }}" style="color:white;text-decoration:none">
-        <h1>🥙 Borne Kebab</h1>
+        <h1>� St-Gentleman</h1>
     </a>
     <div style="display:flex;align-items:center;gap:12px">
         <a href="{{ path('app_menu_index') }}" class="panier-icon" style="background:rgba(255,255,255,.15);color:white;border:2px solid rgba(255,255,255,.5)">
